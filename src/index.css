@@ -51,6 +51,68 @@
   color: #eabd56;
 }
 
+.text-style-9 {
+  font-size: 11px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #879292;
+}
+
+.text-style-10 {
+  @apply font-helveticaBold;
+  font-size: 15px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #1f8ecd;
+}
+
+.text-style-11 {
+  @apply font-helveticaBold;
+  font-size: 13px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #879292;
+}
+
+.text-style-position-bold {
+  font-size: 12px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #353a3a;
+}
+
+.text-style-position {
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #353a3a;
+}
+
+.text-style-12 {
+  font-size: 13px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #5e5e5e;
+}
+
 .gg {
   font-size: 20px;
   font-weight: bold;

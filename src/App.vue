@@ -18,7 +18,14 @@
 
     <div class="w-screen flex justify-center">
       <div class="max-w-5xl w-full">
-        <UserDetail></UserDetail>
+        <UserDetail
+          v-if="summoner"
+          :leagues="summoner.leagues"
+          :most-position="mostPosition"
+          :summary="summary"
+          :win-ratio-champions="winRatioChampions"
+          :games-of-week="[...(winRatioChampions || [])].reverse()"
+        ></UserDetail>
       </div>
     </div>
   </main>
@@ -33,23 +40,58 @@ export default {
   data() {
     return {
       summoner: null,
+      games: [],
+      champions: [],
+      positions: [],
+      summary: null,
+      winRatioChampions: [],
     }
+  },
+  computed: {
+    mostPosition() {
+      return this.positions.length > 0 ? this.positions.reduce((prev, curr) => (prev.games > curr.games ? prev : curr)) : null
+    },
   },
   mounted() {
     this.fetch('soronto3603')
   },
   methods: {
-    fetch(summonerName) {
-      return axios
+    async fetch(summonerName) {
+      const { summoner } = await axios
         .get(`https://codingtest.op.gg/api/summoner/${summonerName}`, {
           params: {
             hl: 'ko',
           },
         })
-        .then(({ data }) => {
-          console.log(data)
-          Object.assign(this, data)
+        .then(({ data }) => data)
+
+      const { games, champions, positions, summary } = await axios
+        .get(`https://codingtest.op.gg/api/summoner/${summonerName}/matches`, {
+          params: {
+            hl: 'ko',
+            lastMatch: 0,
+          },
         })
+        .then(({ data }) => data)
+
+      const { champions: winRatioChampions } = await axios
+        .get(`https://codingtest.op.gg/api/summoner/${summonerName}/mostInfo`, {
+          params: {
+            hl: 'ko',
+          },
+        })
+        .then(({ data }) => data)
+
+      console.log(games, champions, positions, summoner, winRatioChampions, 'hi')
+
+      Object.assign(this, {
+        summoner,
+        games,
+        champions,
+        positions,
+        summary,
+        winRatioChampions,
+      })
     },
   },
   components: { Header, UserProfile, UserDetail },
