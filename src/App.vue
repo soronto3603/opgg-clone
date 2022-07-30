@@ -47,7 +47,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          console.log(data, data.so)
+          console.log(data)
           Object.assign(this, data)
         })
     },
