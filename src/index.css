@@ -2,6 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Helvetica-Bold';
+  src: url('/HelveticaNeueLTStd-Bd.otf');
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/HelveticaNeueLTStd-Lt.otf');
+}
+
+.text-style-4 {
+  @apply font-helvetica;
+  font-size: 11px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -0.42px;
+  color: #657070;
+}
+
+.text-style-5 {
+  @apply font-helveticaBold;
+  font-size: 11px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -0.42px;
+  color: #657070;
+}
+
+.text-style-6 {
+  @apply font-helvetica;
+  font-size: 11px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -0.42px;
+  color: #657070;
+}
+
+.text-style-8 {
+  @apply font-helvetica;
+  font-size: 14px;
+  color: #eabd56;
+}
+
+.gg {
+  font-size: 20px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -0.77px;
+  color: #242929;
+}
+
 * {
   font-family: AppleSDGothicNeo-Regular, 'Malgun Gothic', '맑은 고딕', dotum, '돋움', sans-serif;
 }

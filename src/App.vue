@@ -1,15 +1,23 @@
 <template>
-  <main>
+  <main class="bg-bg">
     <Header></Header>
 
-    <div class="w-screen flex justify-center">
-      <div class="max-w-5xl w-full h-24">
-        <UserProfile></UserProfile>
+    <div class="w-screen flex justify-center border-b border-gray-100 pb-6">
+      <div class="max-w-5xl w-full">
+        <UserProfile
+          v-if="summoner"
+          :previouse-tiers="summoner.previousTiers"
+          :profile-border-image-url="summoner.profileBorderImageUrl"
+          :profile-image-url="summoner.profileImageUrl"
+          :level="summoner.level"
+          :name="summoner.name"
+          :ladder-rank="summoner.ladderRank"
+        />
       </div>
     </div>
 
     <div class="w-screen flex justify-center">
-      <div class="max-w-5xl w-full h-24">
+      <div class="max-w-5xl w-full">
         <UserDetail></UserDetail>
       </div>
     </div>
@@ -24,11 +32,11 @@ import UserDetail from './components/UserDetail.vue'
 export default {
   data() {
     return {
-      user: null,
+      summoner: null,
     }
   },
   mounted() {
-    this.fetch('Hide on bush')
+    this.fetch('soronto3603')
   },
   methods: {
     fetch(summonerName) {
@@ -39,8 +47,8 @@ export default {
           },
         })
         .then(({ data }) => {
-          console.log(data)
-          this.user = data
+          console.log(data, data.so)
+          Object.assign(this, data)
         })
     },
   },
