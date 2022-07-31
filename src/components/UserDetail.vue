@@ -96,10 +96,10 @@
       </div>
 
       <div class="flex bg-gray-150 border-l border-r border-b border-gray-350">
-        <div class="flex">
+        <div class="flex flex-[0_0_260px]">
           <div class="flex flex-col items-center mt-4 mb-6">
             <div>
-              <p class="font-helvetica text-[12px] text-gray-430 mx-8">
+              <p class="font-helvetica text-[12px] text-gray-430 mx-8 whitespace-nowrap w-[78px]">
                 {{ this.filteredGames.length }}전 {{ this.countOfWin }}승 {{ this.countOfLoss }}패
               </p>
             </div>
@@ -114,12 +114,12 @@
             </div>
             <div class="mt-1">
               <span class="font-helveticaBold text-[16px]" :class="getKDAColor(kda)">{{ round(kda, 2) }}:1</span
-              ><span class="ml-1" :class="getWinRatioColor(winPercent / 100, 0)">({{ winPercent }}%)</span>
+              ><span class="ml-1" :class="getWinRatioColor(winPercent / 100, 0)">({{ round(winPercent, 0) }}%)</span>
             </div>
           </div>
         </div>
 
-        <div class="flex flex-col justify-between border-l border-gray-350 py-4 px-4">
+        <div class="flex flex-col justify-between border-l border-gray-350 py-4 pl-4 flex-[0_0_230px]">
           <div class="flex items-center">
             <div class="w-[34px] h-[34px] rounded-full overflow-hidden">
               <img src="https://opgg-static.akamaized.net/images/lol/champion/Lulu.png" />
@@ -187,6 +187,16 @@
           </div>
         </div>
       </div>
+
+      <div class="flex flex-col mt-4 gap-2">
+        <Match
+          :key="index"
+          v-for="(game, index) in this.filteredGames"
+          :match="game"
+          :teams="matchDetailDict[game.gameId]"
+          @summoner="$emit('summoner', $event)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -197,9 +207,10 @@ import CircleChart from './CircleChart.vue'
 import ImageGroup from '../assets/group.png'
 import ImageMostPosition1 from '../assets/icon-mostposition-top.png'
 import ImageMostPosition2 from '../assets/icon-mostposition-jng.png'
+import Match from './Match.vue'
 
 export default {
-  components: { RankCard, TwoTabList, CircleChart },
+  components: { RankCard, TwoTabList, CircleChart, Match },
   props: {
     leagues: [],
     mostPosition: null,
@@ -207,6 +218,7 @@ export default {
     games: [],
     winRatioChampions: [],
     gamesOfWeek: [],
+    matchDetailDict: {},
   },
   computed: {
     filteredGames() {
@@ -219,17 +231,33 @@ export default {
       return this.games
     },
     kda() {
+      if (this.filteredGames.length === 0) {
+        return 0
+      }
+
       return (this.killAvg + this.assistAvg) / this.deathAvg + 2
     },
     killAvg() {
+      if (this.filteredGames.length === 0) {
+        return 0
+      }
+
       const sum = this.filteredGames.reduce((prev, curr) => curr.stats.general.kill + prev, 0)
       return sum / this.filteredGames.length
     },
     deathAvg() {
+      if (this.filteredGames.length === 0) {
+        return 0
+      }
+
       const sum = this.filteredGames.reduce((prev, curr) => curr.stats.general.death + prev, 0)
       return sum / this.filteredGames.length
     },
     assistAvg() {
+      if (this.filteredGames.length === 0) {
+        return 0
+      }
+
       const sum = this.filteredGames.reduce((prev, curr) => curr.stats.general.assist + prev, 0)
       return sum / this.filteredGames.length
     },
@@ -240,6 +268,10 @@ export default {
       return this.filteredGames.length - this.countOfWin
     },
     winPercent() {
+      if (this.filteredGames.length === 0) {
+        return 0
+      }
+
       return (this.countOfWin / this.filteredGames.length) * 100
     },
   },

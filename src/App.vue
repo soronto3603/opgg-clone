@@ -1,6 +1,6 @@
 <template>
   <main class="bg-bg">
-    <Header></Header>
+    <Header @summoner="fetch($event)"></Header>
 
     <div class="w-screen flex justify-center border-b border-gray-100 pb-6">
       <div class="max-w-5xl w-full">
@@ -26,6 +26,8 @@
           :games="games"
           :win-ratio-champions="winRatioChampions"
           :games-of-week="[...(winRatioChampions || [])].reverse()"
+          :match-detail-dict="matchDetailDict"
+          @summoner="fetch($event)"
         ></UserDetail>
       </div>
     </div>
@@ -46,6 +48,7 @@ export default {
       positions: [],
       summary: null,
       winRatioChampions: [],
+      matchDetailDict: {},
     }
   },
   computed: {
@@ -83,7 +86,30 @@ export default {
         })
         .then(({ data }) => data)
 
-      console.log(games, champions, positions, summoner, winRatioChampions, 'hi')
+      const matchDetails = await Promise.all(
+        games.map(game => {
+          return axios
+            .get(`https://codingtest.op.gg/api/summoner/${summonerName}/matchDetail/${game.gameId}`, {
+              params: {
+                hl: 'ko',
+              },
+            })
+            .then(({ data }) => data)
+        })
+      )
+
+      const history = JSON.parse(window.localStorage.getItem('history'))
+      const historyArray = Array.isArray(history) ? history : []
+      window.localStorage.setItem(
+        'history',
+        JSON.stringify([
+          ...historyArray,
+          {
+            summonerName,
+            summoner,
+          },
+        ])
+      )
 
       Object.assign(this, {
         summoner,
@@ -92,6 +118,10 @@ export default {
         positions,
         summary,
         winRatioChampions,
+        matchDetailDict: matchDetails.reduce((prev, curr) => {
+          prev[curr.gameId] = curr.teams
+          return prev
+        }, {}),
       })
     },
   },
