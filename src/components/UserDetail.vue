@@ -81,31 +81,180 @@
         </TwoTabList>
       </div>
     </div>
+
     <div class="w-full mt-2">
-      <div class="h-[94px] w-full bg-white"></div>
+      <div class="w-full bg-gray-50 border border-gray-350 flex px-4 gap-6">
+        <span
+          class="h-9 flex cursor-pointer items-center border-b-2 text-style-position text-gray-450"
+          :class="v === selectedGameFilter ? 'border-blue-600 text-blue-600' : 'border-transparent'"
+          :key="index"
+          @click="onClickGameFilter(v)"
+          v-for="(v, index) in gameFilters"
+        >
+          {{ v }}</span
+        >
+      </div>
+
+      <div class="flex bg-gray-150 border-l border-r border-b border-gray-350">
+        <div class="flex">
+          <div class="flex flex-col items-center mt-4 mb-6">
+            <div>
+              <p class="font-helvetica text-[12px] text-gray-430 mx-8">
+                {{ this.filteredGames.length }}전 {{ this.countOfWin }}승 {{ this.countOfLoss }}패
+              </p>
+            </div>
+            <div class="w-24 h-24 mt-3">
+              <CircleChart class="w-full h-full" :value="round(winPercent, 0)" />
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center ml-4 mr-8">
+            <div class="font-helveticaBold text-[11px]">
+              {{ round(killAvg, 2) }} / <span class="text-death font-helveticaBold text-[11px]">{{ round(deathAvg, 2) }}</span> /
+              {{ round(assistAvg, 2) }}
+            </div>
+            <div class="mt-1">
+              <span class="font-helveticaBold text-[16px]" :class="getKDAColor(kda)">{{ round(kda, 2) }}:1</span
+              ><span class="ml-1" :class="getWinRatioColor(winPercent / 100, 0)">({{ winPercent }}%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col justify-between border-l border-gray-350 py-4 px-4">
+          <div class="flex items-center">
+            <div class="w-[34px] h-[34px] rounded-full overflow-hidden">
+              <img src="https://opgg-static.akamaized.net/images/lol/champion/Lulu.png" />
+            </div>
+            <div class="flex flex-col ml-2">
+              <p class="text-[14px]">룰루</p>
+              <p class="relative -mt-1">
+                <span class="font-helveticaBold text-[11px] text-goodRatio">70%</span>
+                <span class="font-helvetica text-[11px] text-gray-450"> (7승 3패) | </span>
+                <span class="font-helveticaBold text-[11px] text-perfect">13.01 평점</span>
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-[34px] h-[34px] rounded-full overflow-hidden">
+              <img src="https://opgg-static.akamaized.net/images/lol/champion/Leblanc.png" />
+            </div>
+            <div class="flex flex-col ml-2">
+              <p class="text-[14px]">르블랑</p>
+              <p class="relative -mt-1">
+                <span class="font-helveticaBold text-[11px] text-gray-450">48%</span>
+                <span class="font-helvetica text-[11px] text-gray-450"> (7승 3패) | </span>
+                <span class="font-helveticaBold text-[11px] text-gray-450">0.91 평점</span>
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-[34px] h-[34px] rounded-full overflow-hidden">
+              <img :src="ImageGroup" />
+            </div>
+            <div class="flex flex-col ml-2">
+              <p class="text-[11px] text-gray-380">챔피언 정보가 없습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col border-l justify-between border-gray-350 py-4 px-4">
+          <div class="text-gray-430 text-[12px]">선호 포지션 (랭크)</div>
+
+          <div class="flex items-center">
+            <div>
+              <img :src="ImageMostPosition1" />
+            </div>
+            <div class="ml-2">
+              <div class="text-gray-500 text-[14px]">탑</div>
+              <div class="-mt-1">
+                <span class="text-blue-600 font-helveticaBold text-[11px]">70%</span>
+                <span class="font-helvetica text-[11px] text-gray-430"> | Win Rate </span>
+                <span class="font-helveticaBold text-[11px] text-gray-500">53%</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div>
+              <img :src="ImageMostPosition2" />
+            </div>
+            <div class="ml-2">
+              <div class="text-gray-500 text-[14px]">탑</div>
+              <div class="-mt-1">
+                <span class="text-blue-600 font-helveticaBold text-[11px]">30%</span>
+                <span class="font-helvetica text-[11px] text-gray-430"> | 승률 </span>
+                <span class="font-helveticaBold text-[11px] text-gray-500">53%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import RankCard from './RankCard.vue'
 import TwoTabList from './TwoTabList.vue'
+import CircleChart from './CircleChart.vue'
+import ImageGroup from '../assets/group.png'
+import ImageMostPosition1 from '../assets/icon-mostposition-top.png'
+import ImageMostPosition2 from '../assets/icon-mostposition-jng.png'
 
 export default {
-  components: { RankCard, TwoTabList },
+  components: { RankCard, TwoTabList, CircleChart },
   props: {
     leagues: [],
     mostPosition: null,
     summary: null,
+    games: [],
     winRatioChampions: [],
     gamesOfWeek: [],
+  },
+  computed: {
+    filteredGames() {
+      if (this.selectedGameFilter === '솔로게임') {
+        return this.games.filter(game => game.gameType === '솔랭')
+      } else if (this.selectedGameFilter === '자유랭크') {
+        return this.games.filter(game => game.gameType === '자유 5:5 랭크')
+      }
+
+      return this.games
+    },
+    kda() {
+      return (this.killAvg + this.assistAvg) / this.deathAvg + 2
+    },
+    killAvg() {
+      const sum = this.filteredGames.reduce((prev, curr) => curr.stats.general.kill + prev, 0)
+      return sum / this.filteredGames.length
+    },
+    deathAvg() {
+      const sum = this.filteredGames.reduce((prev, curr) => curr.stats.general.death + prev, 0)
+      return sum / this.filteredGames.length
+    },
+    assistAvg() {
+      const sum = this.filteredGames.reduce((prev, curr) => curr.stats.general.assist + prev, 0)
+      return sum / this.filteredGames.length
+    },
+    countOfWin() {
+      return this.filteredGames.reduce((prev, curr) => (curr.isWin ? prev + 1 : prev), 0)
+    },
+    countOfLoss() {
+      return this.filteredGames.length - this.countOfWin
+    },
+    winPercent() {
+      return (this.countOfWin / this.filteredGames.length) * 100
+    },
   },
   data() {
     const menu = ['챔피언 승률', '7일간 랭크 승률']
 
     return {
       menu,
+      gameFilters: ['전체', '솔로게임', '자유랭크'],
       selectedMenu1: menu[0],
       selectedMenu2: menu[0],
+      selectedGameFilter: '전체',
+      ImageGroup,
+      ImageMostPosition1,
+      ImageMostPosition2,
     }
   },
   methods: {
@@ -127,6 +276,10 @@ export default {
         return 'text-goodRatio'
       }
       return ''
+    },
+    onClickGameFilter(filter) {
+      console.log(filter)
+      this.selectedGameFilter = filter
     },
   },
 }

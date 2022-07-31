@@ -23,6 +23,7 @@
           :leagues="summoner.leagues"
           :most-position="mostPosition"
           :summary="summary"
+          :games="games"
           :win-ratio-champions="winRatioChampions"
           :games-of-week="[...(winRatioChampions || [])].reverse()"
         ></UserDetail>
